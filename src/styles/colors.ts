@@ -1,6 +1,6 @@
 export const AppColors = {
   primary: "#000",
-  white: "fff",
+  white: "white",
   black: "000",
   lightGray: "#f0f0f0",
   backGround: "#f6f6f6",

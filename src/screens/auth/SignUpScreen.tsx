@@ -10,13 +10,16 @@ import React, { useState } from "react";
 import { Image, StyleSheet } from "react-native";
 import { s, vs } from "react-native-size-matters";
 
-const SignInScreen = () => {
+const SignUpScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("");
   const navigation = useNavigation();
+
   return (
     <AppSaveView style={styles.container}>
       <Image source={IMAGES.appLogo} style={styles.logo} />
+      <AppTextInput placeholder="User Name" onChangeText={setUserName} />
       <AppTextInput placeholder="Email" onChangeText={setEmail} />
       <AppTextInput
         placeholder="Password"
@@ -24,18 +27,18 @@ const SignInScreen = () => {
         secureTextEntry
       />
       <AppText style={styles.appName}>Smart E-Commerce</AppText>
-      <AppButton title="Login" />
+      <AppButton title="Create New Account" />
       <AppButton
-        title="Sign Up"
-        style={styles.registerButton}
+        title="Go ToSign In"
+        style={styles.signInButton}
         textColor={AppColors.primary}
-        onPress={() => navigation.navigate("SignUpScreen")}
+        onPress={() => navigation.navigate("SignInScreen")}
       />
     </AppSaveView>
   );
 };
 
-export default SignInScreen;
+export default SignUpScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -51,7 +54,7 @@ const styles = StyleSheet.create({
     fontSize: s(16),
     marginBottom: vs(15),
   },
-  registerButton: {
+  signInButton: {
     backgroundColor: AppColors.white,
     borderWidth: 1,
     marginTop: vs(15),
