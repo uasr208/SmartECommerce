@@ -11,7 +11,7 @@ import {
 
 interface AppSaveViewProps {
   children: React.ReactNode;
-  style: ViewStyle;
+  style?: ViewStyle;
 }
 const AppSaveView: FC<AppSaveViewProps> = ({ children, style }) => {
   return (
