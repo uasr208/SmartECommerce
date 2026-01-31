@@ -1,3 +1,4 @@
+import CartItem from "@/src/components/cart/CartItem";
 import HomeHeader from "@/src/components/headers/HomeHeader";
 import AppSaveView from "@/src/components/views/AppSaveView";
 import React from "react";
@@ -7,6 +8,8 @@ const CartScreen = () => {
   return (
     <AppSaveView>
       <HomeHeader />
+      {/* <EmptyCart /> */}
+      <CartItem />
     </AppSaveView>
   );
 };
