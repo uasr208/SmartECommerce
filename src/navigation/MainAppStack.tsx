@@ -1,5 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import CheckoutScreen from "../screens/cart/CheckoutScreen";
+import MyOrdersScreen from "../screens/profile/MyOrdersScreen";
 import AuthStack from "./AuthStack";
 import MainAppBottomTabs from "./MainAppBottomTabs";
 
@@ -10,6 +11,11 @@ export default function MainAppStack() {
     <stack.Navigator screenOptions={{ headerShown: false }}>
       <stack.Screen name="AuthStack" component={AuthStack} />
       <stack.Screen name="MainAppBottomTabs" component={MainAppBottomTabs} />
+      <stack.Screen
+        options={{ headerShown: true, title: "My Orders" }}
+        name="MyOrdersScreen"
+        component={MyOrdersScreen}
+      />
       <stack.Screen
         name="CheckoutScreen"
         options={{ headerShown: true }}
