@@ -2,11 +2,14 @@ import ProductCard from "@/src/components/cards/ProductCard";
 import HomeHeader from "@/src/components/headers/HomeHeader";
 import AppSaveView from "@/src/components/views/AppSaveView";
 import { products } from "@/src/data/products";
+import { addItemTocart } from "@/src/store/reducers/cartSlice";
 import React from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { s, vs } from "react-native-size-matters";
+import { useDispatch } from "react-redux";
 
 const HomeScreen = () => {
+  const dispatch = useDispatch();
   return (
     <AppSaveView>
       <HomeHeader />
@@ -19,7 +22,9 @@ const HomeScreen = () => {
             imageURl={item.imageURL}
             title={item.title}
             price={item.price}
-            onAddToCartPress={() => {}}
+            onAddToCartPress={() => {
+              dispatch(addItemTocart(item));
+            }}
           />
         )}
         columnWrapperStyle={{
