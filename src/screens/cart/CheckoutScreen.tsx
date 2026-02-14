@@ -1,17 +1,29 @@
 import AppButton from "@/src/components/buttons/AppButton";
 import AppTextInputController from "@/src/components/inputs/AppTextInputController";
 import AppSaveView from "@/src/components/views/AppSaveView";
-import { IS_Android, IS_IOS } from "@/src/constants/constants";
+import { db } from "@/src/config/firebase";
+import {
+  IS_Android,
+  IS_IOS,
+  shippingFee,
+  taxes,
+} from "@/src/constants/constants";
+import { emptyCart } from "@/src/store/reducers/cartSlice";
+import { RootState } from "@/src/store/store";
 import { AppColors } from "@/src/styles/colors";
 import {
   commonStyles,
   sharedPaddinghorizontal,
 } from "@/src/styles/sharedStyles";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigation } from "@react-navigation/native";
+import { addDoc, collection, doc } from "firebase/firestore";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Alert, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { s, vs } from "react-native-size-matters";
+import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
 
 const schema = yup
@@ -37,9 +49,37 @@ const CheckoutScreen = () => {
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
-  const saveOrder = (formData: FormData) => {
-    Alert.alert(JSON.stringify(formData));
-    console.log(formData);
+
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state: RootState) => state.userSlice);
+  const { items } = useSelector((state: RootState) => state.cartSlice);
+  const totalProductsPriceSum = items.reduce((acc, item) => acc + item.sum, 0);
+  const totalPrice = totalProductsPriceSum + shippingFee + taxes;
+
+  const saveOrder = async (formData: FormData) => {
+    try {
+      const orderBody = {
+        ...formData,
+        items,
+        totalProductsPriceSum,
+        createdAt: new Date(),
+        totalPrice,
+      };
+      const userOrderRef = collection(doc(db, "users", userData.uid), "orders");
+      await addDoc(userOrderRef, orderBody);
+
+      const orderRef = collection(db, "orders");
+      await addDoc(orderRef, orderBody);
+
+      showMessage({ type: "success", message: "Order saved successfully" });
+      navigation.goBack();
+      dispatch(emptyCart());
+      console.log(formData);
+    } catch (error) {
+      console.error("Error saving order:", error);
+      showMessage({ type: "danger", message: "Something went wrong" });
+    }
   };
   return (
     <AppSaveView>

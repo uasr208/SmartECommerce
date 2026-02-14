@@ -3,15 +3,20 @@ import AppButton from "@/src/components/buttons/AppButton";
 import AppTextInputController from "@/src/components/inputs/AppTextInputController";
 import AppText from "@/src/components/texts/AppText";
 import AppSaveView from "@/src/components/views/AppSaveView";
+import { auth } from "@/src/config/firebase";
 import { IMAGES } from "@/src/constants/images-paths";
+import { setUserData } from "@/src/store/reducers/userSlice";
 import { AppColors } from "@/src/styles/colors";
 import { sharedPaddinghorizontal } from "@/src/styles/sharedStyles";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigation } from "@react-navigation/native";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Image, StyleSheet } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { s, vs } from "react-native-size-matters";
+import { useDispatch } from "react-redux";
 import * as yup from "yup";
 
 const schema = yup
@@ -35,7 +40,39 @@ const SignInScreen = () => {
     resolver: yupResolver(schema),
   });
   const navigation = useNavigation();
-  const onLoginPress = () => navigation.navigate("MainAppBottomTabs");
+  const dispatch = useDispatch();
+  const onLoginPress = async (data: FormData) => {
+    console.log(data);
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password,
+      );
+      navigation.navigate("MainAppBottomTabs");
+      console.log(JSON.stringify(userCredential, null, 3));
+
+      const userDataObj = {
+        uid: userCredential.user.uid,
+      };
+      dispatch(setUserData(userDataObj));
+    } catch (error: any) {
+      let errorMessage = "";
+      console.log(error.code);
+      if (error.code === "auth/invalid-credential") {
+        errorMessage = "Wrong email or password";
+      } else if (error.code === "auth/user-not-found") {
+        errorMessage = "User not found";
+      } else {
+        errorMessage = "Something went wrong";
+      }
+
+      showMessage({
+        message: errorMessage,
+        type: "danger",
+      });
+    }
+  };
 
   return (
     <AppSaveView style={styles.container}>

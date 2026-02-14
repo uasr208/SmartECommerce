@@ -3,15 +3,20 @@ import AppTextInputController from "@/src/components/inputs/AppTextInputControll
 
 import AppText from "@/src/components/texts/AppText";
 import AppSaveView from "@/src/components/views/AppSaveView";
+import { auth } from "@/src/config/firebase";
 import { IMAGES } from "@/src/constants/images-paths";
+import { setUserData } from "@/src/store/reducers/userSlice";
 import { AppColors } from "@/src/styles/colors";
 import { sharedPaddinghorizontal } from "@/src/styles/sharedStyles";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigation } from "@react-navigation/native";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Alert, Image, StyleSheet } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import { s, vs } from "react-native-size-matters";
+import { useDispatch } from "react-redux";
 import * as yup from "yup";
 
 const schema = yup
@@ -35,9 +40,37 @@ const SignUpScreen = () => {
     resolver: yupResolver(schema),
   });
   const navigation = useNavigation();
-  const onSignUpPress = () => {
-    Alert.alert("Sign Up Success");
-    navigation.navigate("MainAppBottomTabs");
+  const dispatch = useDispatch();
+  const onSignUpPress = async (data: FormData) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password,
+      );
+      Alert.alert("Sign Up Success");
+      navigation.navigate("MainAppBottomTabs");
+
+      const userDataObj = {
+        uid: userCredential.user.uid,
+      };
+      dispatch(setUserData(userDataObj));
+    } catch (error: any) {
+      let errorMessage = "";
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage = "Email already in use";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Invalid email";
+      } else if (error.code === "auth/weak-password") {
+        errorMessage = "Password is too weak";
+      } else {
+        errorMessage = "Something went wrong";
+      }
+      showMessage({
+        message: errorMessage,
+        type: "danger",
+      });
+    }
   };
   return (
     <AppSaveView style={styles.container}>

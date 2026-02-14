@@ -1,9 +1,9 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { AppColors } from "../../styles/colors";
-import AppText from "../texts/AppText";
-import { commonStyles } from "../../styles/sharedStyles";
+import { StyleSheet, View } from "react-native";
 import { s } from "react-native-size-matters";
+import { AppColors } from "../../styles/colors";
+import { commonStyles } from "../../styles/sharedStyles";
+import AppText from "../texts/AppText";
 
 interface OrderItemProps {
   date: string;
@@ -31,7 +31,6 @@ const OrderItem: React.FC<OrderItemProps> = ({
           <AppText style={styles.totalAmount}>
             {Math.abs(totalAmount).toFixed(2)} $
           </AppText>
-          <AppText style={styles.date}>{date}</AppText>
         </View>
       </View>
     </View>
